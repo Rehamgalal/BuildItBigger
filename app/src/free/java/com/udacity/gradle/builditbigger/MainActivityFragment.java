@@ -44,9 +44,9 @@ public class MainActivityFragment extends Fragment {
         tellJoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                @SuppressLint("StaticFieldLeak") AsyncTask<Void,Void,Void> telJoke=new AsyncTask<Void, Void, Void>() {
+                @SuppressLint("StaticFieldLeak") AsyncTask<Void,Void,String> telJoke=new AsyncTask<Void, Void, String>() {
                     @Override
-                    protected Void doInBackground(Void... voids) {
+                    protected String doInBackground(Void... voids) {
                         if(myApiService == null) {  // Only do this once
                             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                                     new AndroidJsonFactory(), null)
@@ -67,14 +67,22 @@ public class MainActivityFragment extends Fragment {
 
                         }
                         try {
-                            joke=   myApiService.getJoke().execute().getData();
+                            if (mIdlingResource != null) {
+                                mIdlingResource.setIdleState(false);
+                            }
+                            return  myApiService.getJoke().execute().getData();
                         } catch (IOException e) {
                             Log.i("jokeerror",e.getMessage());
+                            return null;
                         }
-                        if (mIdlingResource != null) {
-                            mIdlingResource.setIdleState(false);
-                        }
-                        return null;
+
+                    }
+
+                    @Override
+                    protected void onPostExecute(String aVoid) {
+                        super.onPostExecute(aVoid);
+                        Log.i("the joke ",""+ aVoid);
+                        joke=aVoid;
                     }
                 };
                 telJoke.execute();

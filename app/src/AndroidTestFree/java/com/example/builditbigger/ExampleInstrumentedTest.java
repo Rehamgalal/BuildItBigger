@@ -1,4 +1,4 @@
-package com.example.builditbigger.free;
+package com.example.builditbigger;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

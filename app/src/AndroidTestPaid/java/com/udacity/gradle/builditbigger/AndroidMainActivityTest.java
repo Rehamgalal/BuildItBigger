@@ -1,4 +1,4 @@
-package com.example.builditbigger.free;
+package com.udacity.gradle.builditbigger;
 
 import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
