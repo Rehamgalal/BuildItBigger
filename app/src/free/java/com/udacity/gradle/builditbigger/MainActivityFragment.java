@@ -8,11 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.mylibrary.LibraryActivity;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -31,7 +31,6 @@ public class MainActivityFragment extends Fragment {
     @Nullable
     private SimpleIdlingResource mIdlingResource;
     private static MyApi myApiService = null;
-    String joke="a joke";
     public MainActivityFragment() {
     }
 
@@ -40,7 +39,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
         // Create an ad request. Check logcat output for the hashed device ID to "d9dbe89ba49f02d4"
-        Button tellJoke= (Button)root.findViewById(R.id.btntelljok);
+        Button tellJoke= root.findViewById(R.id.btntelljok);
         tellJoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,23 +71,21 @@ public class MainActivityFragment extends Fragment {
                             }
                             return  myApiService.getJoke().execute().getData();
                         } catch (IOException e) {
-                            Log.i("jokeerror",e.getMessage());
-                            return null;
+                            return e.getMessage();
                         }
 
                     }
 
                     @Override
-                    protected void onPostExecute(String aVoid) {
-                        super.onPostExecute(aVoid);
-                        Log.i("the joke ",""+ aVoid);
-                        joke=aVoid;
+                    protected void onPostExecute(String joke) {
+                        super.onPostExecute(joke);
+                        Intent intent=new Intent(getActivity(), LibraryActivity.class);
+                        intent.putExtra("joke",joke);
+                        startActivity(intent);
                     }
                 };
                 telJoke.execute();
-                Intent intent=new Intent(getActivity(), LibraryActivity.class);
-                intent.putExtra("joke",joke);
-                startActivity(intent);
+
             }
         });
 

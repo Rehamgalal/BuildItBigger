@@ -27,7 +27,6 @@ public class MainActivityFragment extends Fragment {
     @Nullable
     private SimpleIdlingResource mIdlingResource;
     private static MyApi myApiService = null;
-    String joke="a joke";
     public MainActivityFragment() {
     }
 
@@ -63,20 +62,26 @@ public class MainActivityFragment extends Fragment {
 
                         }
                         try {
-                            joke=   myApiService.getJoke().execute().getData();
+                            if (mIdlingResource != null) {
+                                mIdlingResource.setIdleState(false);
+                            }
+                            return  myApiService.getJoke().execute().getData();
                         } catch (IOException e) {
-                            Log.i("jokeerror",e.getMessage());
+                            return e.getMessage();
                         }
-                        if (mIdlingResource != null) {
-                            mIdlingResource.setIdleState(false);
-                        }
-                        return null;
+
+                    }
+
+                    @Override
+                    protected void onPostExecute(String joke) {
+                        super.onPostExecute(joke);
+                        Intent intent=new Intent(getActivity(), LibraryActivity.class);
+                        intent.putExtra("joke",joke);
+                        startActivity(intent);
                     }
                 };
                 telJoke.execute();
-                Intent intent=new Intent(getActivity(), LibraryActivity.class);
-                intent.putExtra("joke",joke);
-                startActivity(intent);
+
             }
         });
 
